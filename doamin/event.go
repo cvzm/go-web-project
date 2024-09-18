@@ -22,9 +22,8 @@ type Event struct {
 	Source      EventSource `gorm:"type:varchar(255);not null"`
 	EventType   string      `gorm:"type:varchar(100);not null"`
 	Description string      `gorm:"type:text"`
-	Timestamp   time.Time   `gorm:"type:timestamp;not null"`
-	CreatedAt   time.Time   `gorm:"type:timestamp;not null"`
-	UpdatedAt   time.Time   `gorm:"type:timestamp;not null"`
+	CreatedAt   time.Time   `gorm:"autoCreateTime"`
+	UpdatedAt   time.Time   `gorm:"autoUpdateTime"`
 }
 
 // TableName returns the name of the events table
@@ -63,7 +62,7 @@ func (a AWSEvent) Parse() (Event, error) {
 		Source:      SourceAWS,
 		EventType:   a.AWSEventType,
 		Description: a.AWSMessage,
-		Timestamp:   a.AWSTimestamp,
+		CreatedAt:   a.AWSTimestamp,
 	}, nil
 }
 
@@ -81,6 +80,6 @@ func (g GCPEvent) Parse() (Event, error) {
 		Source:      SourceGCP,
 		EventType:   g.GCPEventType,
 		Description: g.GCPMessage,
-		Timestamp:   g.GCPTimestamp,
+		CreatedAt:   g.GCPTimestamp,
 	}, nil
 }

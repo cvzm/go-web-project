@@ -17,7 +17,7 @@ build: wire
 	$(GOBUILD) -o $(BINARY_NAME) -v
 
 test:
-	$(GOTEST) -v ./...
+	$(GOTEST) ./... -count=1
 
 clean:
 	$(GOCLEAN)
