@@ -11,6 +11,25 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// newTestContext creates a new test context for Echo framework
+// It takes the HTTP method, URL, request body, and Echo instance as parameters
+// Returns an Echo context and httptest.ResponseRecorder for testing
+func newTestContext(method, url string, body interface{}, e *echo.Echo) (echo.Context, *httptest.ResponseRecorder) {
+	var reqBody string
+	if body != nil {
+		jsonBody, _ := json.Marshal(body)
+		reqBody = string(jsonBody)
+	}
+
+	// Create a new HTTP request with the given method, URL and body
+	req := httptest.NewRequest(method, url, strings.NewReader(reqBody))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	resp := httptest.NewRecorder()
+	c := e.NewContext(req, resp)
+
+	return c, resp
+}
+
 func TestNewServer(t *testing.T) {
 	e := NewServer()
 	assert.NotNil(t, e)

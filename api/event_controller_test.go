@@ -1,11 +1,8 @@
 package api
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
-	"net/http/httptest"
-	"strings"
 	"testing"
 	"time"
 
@@ -38,15 +35,11 @@ func TestEventController_CreateAWSEvent(t *testing.T) {
 
 		mockUsecase.On("Create", mock.AnythingOfType("doamin.AWSEvent")).Return(nil).Once()
 
-		reqBody, _ := json.Marshal(awsEvent)
-		req := httptest.NewRequest(http.MethodPost, "/events/aws", strings.NewReader(string(reqBody)))
-		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-		rec := httptest.NewRecorder()
-		c := e.NewContext(req, rec)
+		c, resp := newTestContext(http.MethodPost, "/events/aws", awsEvent, e)
 
 		err := controller.CreateAWSEvent(c)
 		assert.NoError(t, err)
-		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, http.StatusOK, resp.Code)
 
 		mockUsecase.AssertExpectations(t)
 	})
@@ -61,15 +54,11 @@ func TestEventController_CreateAWSEvent(t *testing.T) {
 
 		mockUsecase.On("Create", mock.AnythingOfType("doamin.AWSEvent")).Return(errors.New("creation failed")).Once()
 
-		reqBody, _ := json.Marshal(awsEvent)
-		req := httptest.NewRequest(http.MethodPost, "/events/aws", strings.NewReader(string(reqBody)))
-		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-		rec := httptest.NewRecorder()
-		c := e.NewContext(req, rec)
+		c, resp := newTestContext(http.MethodPost, "/events/aws", awsEvent, e)
 
 		err := controller.CreateAWSEvent(c)
 		assert.NoError(t, err)
-		assert.Equal(t, http.StatusInternalServerError, rec.Code)
+		assert.Equal(t, http.StatusInternalServerError, resp.Code)
 
 		mockUsecase.AssertExpectations(t)
 	})
@@ -90,15 +79,11 @@ func TestEventController_CreateGCPEvent(t *testing.T) {
 
 		mockUsecase.On("Create", mock.AnythingOfType("doamin.GCPEvent")).Return(nil).Once()
 
-		reqBody, _ := json.Marshal(gcpEvent)
-		req := httptest.NewRequest(http.MethodPost, "/events/gcp", strings.NewReader(string(reqBody)))
-		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-		rec := httptest.NewRecorder()
-		c := e.NewContext(req, rec)
+		c, resp := newTestContext(http.MethodPost, "/events/gcp", gcpEvent, e)
 
 		err := controller.CreateGCPEvent(c)
 		assert.NoError(t, err)
-		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, http.StatusOK, resp.Code)
 
 		mockUsecase.AssertExpectations(t)
 	})
@@ -113,15 +98,11 @@ func TestEventController_CreateGCPEvent(t *testing.T) {
 
 		mockUsecase.On("Create", mock.AnythingOfType("doamin.GCPEvent")).Return(errors.New("creation failed")).Once()
 
-		reqBody, _ := json.Marshal(gcpEvent)
-		req := httptest.NewRequest(http.MethodPost, "/events/gcp", strings.NewReader(string(reqBody)))
-		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-		rec := httptest.NewRecorder()
-		c := e.NewContext(req, rec)
+		c, resp := newTestContext(http.MethodPost, "/events/gcp", gcpEvent, e)
 
 		err := controller.CreateGCPEvent(c)
 		assert.NoError(t, err)
-		assert.Equal(t, http.StatusInternalServerError, rec.Code)
+		assert.Equal(t, http.StatusInternalServerError, resp.Code)
 
 		mockUsecase.AssertExpectations(t)
 	})
