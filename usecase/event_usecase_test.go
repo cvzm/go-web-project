@@ -6,13 +6,13 @@ import (
 	"time"
 
 	"github.com/cvzm/go-web-project/doamin"
-	repository "github.com/cvzm/go-web-project/repository/mock"
+	domain_mock "github.com/cvzm/go-web-project/doamin/mock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
 func TestEventUsecase_Create(t *testing.T) {
-	mockRepo := new(repository.MockEventRepository)
+	mockRepo := new(domain_mock.MockEventRepository)
 	usecase := NewEventUsecase(mockRepo)
 
 	t.Run("Successfully create AWS event", func(t *testing.T) {

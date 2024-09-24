@@ -10,21 +10,21 @@ import (
 	"time"
 
 	"github.com/cvzm/go-web-project/doamin"
-	usecase "github.com/cvzm/go-web-project/usecase/mock"
+	domain_mock "github.com/cvzm/go-web-project/doamin/mock"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
 func TestNewEventController(t *testing.T) {
-	mockUsecase := new(usecase.MockEventUsecase)
+	mockUsecase := new(domain_mock.MockEventUsecase)
 	controller := NewEventController(mockUsecase)
 	assert.NotNil(t, controller)
 	assert.Equal(t, mockUsecase, controller.eventUsecase)
 }
 
 func TestEventController_CreateAWSEvent(t *testing.T) {
-	mockUsecase := new(usecase.MockEventUsecase)
+	mockUsecase := new(domain_mock.MockEventUsecase)
 	controller := NewEventController(mockUsecase)
 	e := echo.New()
 
@@ -76,7 +76,7 @@ func TestEventController_CreateAWSEvent(t *testing.T) {
 }
 
 func TestEventController_CreateGCPEvent(t *testing.T) {
-	mockUsecase := new(usecase.MockEventUsecase)
+	mockUsecase := new(domain_mock.MockEventUsecase)
 	controller := NewEventController(mockUsecase)
 	e := echo.New()
 
@@ -129,7 +129,7 @@ func TestEventController_CreateGCPEvent(t *testing.T) {
 
 func TestSetupEventRoutes(t *testing.T) {
 	e := echo.New()
-	mockUsecase := new(usecase.MockEventUsecase)
+	mockUsecase := new(domain_mock.MockEventUsecase)
 	controller := NewEventController(mockUsecase)
 
 	SetupEventRoutes(e, controller)

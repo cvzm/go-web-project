@@ -1,20 +1,6 @@
-// Package doamin defines event-related data structures and interfaces
-
 package doamin
 
 import "time"
-
-// EventSource represents the source of an event
-type EventSource string
-
-// Constants defining different event sources
-const (
-	SourceAWS     EventSource = "AWS"
-	SourceGCP     EventSource = "GCP"
-	SourceAzure   EventSource = "Azure"
-	SourceAlibaba EventSource = "Alibaba"
-	SourceTencent EventSource = "Tencent"
-)
 
 // Event struct defines the properties of an event
 type Event struct {
@@ -31,21 +17,35 @@ func (Event) TableName() string {
 	return "events"
 }
 
+// EventSource represents the source of an event
+type EventSource string
+
+// Constants defining different event sources
+const (
+	SourceAWS     EventSource = "AWS"
+	SourceGCP     EventSource = "GCP"
+	SourceAzure   EventSource = "Azure"
+	SourceAlibaba EventSource = "Alibaba"
+	SourceTencent EventSource = "Tencent"
+)
+
 // EventRepository defines the interface for event storage
 type EventRepository interface {
 	Save(event *Event) error
 	FindAll() ([]Event, error)
 }
 
-// CloudEvent defines the interface for cloud events
-type CloudEvent interface {
-	Parse() (Event, error)
-}
-
 // EventUsecase defines the interface for event use cases
 type EventUsecase interface {
 	Create(cloudEvent CloudEvent) error
+
+	// TODO: GetAllEvents
 	// GetAllEvents() ([]Event, error)
+}
+
+// CloudEvent defines the interface for cloud events
+type CloudEvent interface {
+	Parse() (Event, error)
 }
 
 // AWSEvent represents an AWS cloud event

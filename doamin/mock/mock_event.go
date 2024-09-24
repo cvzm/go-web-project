@@ -1,4 +1,4 @@
-package repository
+package domain_mock
 
 import (
 	"github.com/cvzm/go-web-project/doamin"
@@ -20,4 +20,14 @@ func (m *MockEventRepository) Save(event *doamin.Event) error {
 func (m *MockEventRepository) FindAll() ([]doamin.Event, error) {
 	args := m.Called()
 	return args.Get(0).([]doamin.Event), args.Error(1)
+}
+
+// MockEventUsecase is a mock implementation of doamin.EventUsecase
+type MockEventUsecase struct {
+	mock.Mock
+}
+
+func (m *MockEventUsecase) Create(cloudEvent doamin.CloudEvent) error {
+	args := m.Called(cloudEvent)
+	return args.Error(0)
 }
