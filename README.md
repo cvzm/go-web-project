@@ -10,7 +10,7 @@ This demo project centers around event handling, demonstrating the complete work
 
 - RESTful API implemented using the Echo framework, showcasing CRUD operations for events
 - PostgreSQL database operations using GORM for persistent storage of event data
-- Domain-Driven Design (DDD) principles applied to clearly separate business logic from infrastructure code
+- Clean Architecture principles applied to clearly separate business logic from infrastructure code
 - Graceful shutdown mechanism to ensure proper request handling during service termination
 - Flexible configuration management through environment variables, adaptable to different deployment environments
 - Support for database read replicas, optimizing query performance for high-concurrency scenarios

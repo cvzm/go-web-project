@@ -27,7 +27,11 @@ func InitializeApp() (*App, error) {
 	echo := api.NewServer()
 	eventRepository := repository.NewEventRepository(db)
 	eventUsecase := usecase.NewEventUsecase(eventRepository)
+	sqsConsumer, err := initSQSConsumer(config, eventUsecase)
+	if err != nil {
+		return nil, err
+	}
 	eventController := api.NewEventController(eventUsecase)
-	app := NewApp(config, db, echo, eventController)
+	app := NewApp(config, db, echo, sqsConsumer, eventController)
 	return app, nil
 }

@@ -18,13 +18,13 @@ func NewEventController(usecase doamin.EventUsecase) *EventController {
 
 func (c *EventController) CreateAWSEvent(ctx echo.Context) error {
 	return HandleRequest(ctx, func(param doamin.AWSEvent) (any, error) {
-		return nil, c.eventUsecase.Create(param)
+		return nil, c.eventUsecase.Save(param)
 	})
 }
 
 func (c *EventController) CreateGCPEvent(ctx echo.Context) error {
 	return HandleRequest(ctx, func(param doamin.GCPEvent) (any, error) {
-		return nil, c.eventUsecase.Create(param)
+		return nil, c.eventUsecase.Save(param)
 	})
 }
 

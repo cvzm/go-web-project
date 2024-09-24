@@ -33,7 +33,7 @@ func TestEventController_CreateAWSEvent(t *testing.T) {
 			AWSTimestamp: time.Now(),
 		}
 
-		mockUsecase.On("Create", mock.AnythingOfType("doamin.AWSEvent")).Return(nil).Once()
+		mockUsecase.On("Save", mock.AnythingOfType("doamin.AWSEvent")).Return(nil).Once()
 
 		c, resp := newTestContext(http.MethodPost, "/events/aws", awsEvent, e)
 
@@ -52,7 +52,7 @@ func TestEventController_CreateAWSEvent(t *testing.T) {
 			AWSTimestamp: time.Now(),
 		}
 
-		mockUsecase.On("Create", mock.AnythingOfType("doamin.AWSEvent")).Return(errors.New("creation failed")).Once()
+		mockUsecase.On("Save", mock.AnythingOfType("doamin.AWSEvent")).Return(errors.New("creation failed")).Once()
 
 		c, resp := newTestContext(http.MethodPost, "/events/aws", awsEvent, e)
 
@@ -77,7 +77,7 @@ func TestEventController_CreateGCPEvent(t *testing.T) {
 			GCPTimestamp: time.Now(),
 		}
 
-		mockUsecase.On("Create", mock.AnythingOfType("doamin.GCPEvent")).Return(nil).Once()
+		mockUsecase.On("Save", mock.AnythingOfType("doamin.GCPEvent")).Return(nil).Once()
 
 		c, resp := newTestContext(http.MethodPost, "/events/gcp", gcpEvent, e)
 
@@ -96,7 +96,7 @@ func TestEventController_CreateGCPEvent(t *testing.T) {
 			GCPTimestamp: time.Now(),
 		}
 
-		mockUsecase.On("Create", mock.AnythingOfType("doamin.GCPEvent")).Return(errors.New("creation failed")).Once()
+		mockUsecase.On("Save", mock.AnythingOfType("doamin.GCPEvent")).Return(errors.New("creation failed")).Once()
 
 		c, resp := newTestContext(http.MethodPost, "/events/gcp", gcpEvent, e)
 

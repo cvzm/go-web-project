@@ -11,11 +11,11 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestEventUsecase_Create(t *testing.T) {
+func TestEventUsecase_Save(t *testing.T) {
 	mockRepo := new(domain_mock.MockEventRepository)
 	usecase := NewEventUsecase(mockRepo)
 
-	t.Run("Successfully create AWS event", func(t *testing.T) {
+	t.Run("Successfully save AWS event", func(t *testing.T) {
 		awsEvent := doamin.AWSEvent{
 			AWSEventID:   "aws-123",
 			AWSEventType: "EC2_STARTED",
@@ -32,13 +32,13 @@ func TestEventUsecase_Create(t *testing.T) {
 
 		mockRepo.On("Save", mock.AnythingOfType("*doamin.Event")).Return(nil).Once()
 
-		err := usecase.Create(awsEvent)
+		err := usecase.Save(awsEvent)
 
 		assert.NoError(t, err)
 		mockRepo.AssertCalled(t, "Save", &expectedEvent)
 	})
 
-	t.Run("Successfully create GCP event", func(t *testing.T) {
+	t.Run("Successfully save GCP event", func(t *testing.T) {
 		gcpEvent := doamin.GCPEvent{
 			GCPEventID:   "gcp-456",
 			GCPEventType: "VM_STOPPED",
@@ -55,7 +55,7 @@ func TestEventUsecase_Create(t *testing.T) {
 
 		mockRepo.On("Save", mock.AnythingOfType("*doamin.Event")).Return(nil).Once()
 
-		err := usecase.Create(gcpEvent)
+		err := usecase.Save(gcpEvent)
 
 		assert.NoError(t, err)
 		mockRepo.AssertCalled(t, "Save", &expectedEvent)
@@ -71,7 +71,7 @@ func TestEventUsecase_Create(t *testing.T) {
 
 		mockRepo.On("Save", mock.AnythingOfType("*doamin.Event")).Return(errors.New("save failed")).Once()
 
-		err := usecase.Create(awsEvent)
+		err := usecase.Save(awsEvent)
 
 		assert.Error(t, err)
 		assert.EqualError(t, err, "save failed")

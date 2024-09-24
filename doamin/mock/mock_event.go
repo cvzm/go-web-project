@@ -27,7 +27,7 @@ type MockEventUsecase struct {
 	mock.Mock
 }
 
-func (m *MockEventUsecase) Create(cloudEvent doamin.CloudEvent) error {
+func (m *MockEventUsecase) Save(cloudEvent doamin.CloudEvent) error {
 	args := m.Called(cloudEvent)
 	return args.Error(0)
 }

@@ -37,7 +37,7 @@ type EventRepository interface {
 
 // EventUsecase defines the interface for event use cases
 type EventUsecase interface {
-	Create(cloudEvent CloudEvent) error
+	Save(cloudEvent CloudEvent) error
 
 	// TODO: GetAllEvents
 	// GetAllEvents() ([]Event, error)

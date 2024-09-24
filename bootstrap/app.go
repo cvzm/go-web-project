@@ -18,55 +18,66 @@ import (
 
 // App struct represents the main application
 type App struct {
-	config *Config
-	db     *gorm.DB
-	echo   *echo.Echo
+	config      *Config
+	db          *gorm.DB
+	echo        *echo.Echo
+	sqsConsumer *SQSConsumer
 
 	eventController *api.EventController
 }
 
 // NewApp creates and returns a new App instance
-func NewApp(cfg *Config, db *gorm.DB, e *echo.Echo, eventController *api.EventController) *App {
+func NewApp(cfg *Config, db *gorm.DB, e *echo.Echo, sqsConsumer *SQSConsumer, eventController *api.EventController) *App {
 	return &App{
 		config:          cfg,
 		db:              db,
 		echo:            e,
+		sqsConsumer:     sqsConsumer,
 		eventController: eventController,
 	}
 }
 
 // SetupAndRun sets up and runs the application
 func (a *App) SetupAndRun() error {
-	// Set up routes
+	a.setupRoutes()
+
+	go a.startServer()
+	go a.sqsConsumer.Start()
+
+	return a.gracefulShutdown()
+}
+
+// setupRoutes sets up all routes
+func (a *App) setupRoutes() {
 	api.SetupEventRoutes(a.echo, a.eventController)
+}
 
-	// Start the server in a goroutine
-	go func() {
-		serverAddr := fmt.Sprintf(":%d", a.config.ServerPort)
-		if err := a.echo.Start(serverAddr); err != nil {
-			a.echo.Logger.Info("Shutting down the server")
-		}
-	}()
+// startServer starts the server in the background
+func (a *App) startServer() {
+	serverAddr := fmt.Sprintf(":%d", a.config.ServerPort)
+	if err := a.echo.Start(serverAddr); err != nil {
+		a.echo.Logger.Info("Server is shutting down")
+	}
+}
 
-	// Wait for interrupt signal to gracefully shutdown the server
+// gracefulShutdown gracefully shuts down the server
+func (a *App) gracefulShutdown() error {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 	<-quit
 
-	// Gracefully shutdown the server
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
 	if err := a.echo.Shutdown(ctx); err != nil {
 		return err
 	}
 
-	return a.Shutdown()
+	return a.closeDB()
 }
 
-// Shutdown gracefully shuts down the application
-func (a *App) Shutdown() error {
-	// Add any necessary cleanup operations here
-	// For example, closing database connections
+// closeDB closes the database connection
+func (a *App) closeDB() error {
 	sqlDB, err := a.db.DB()
 	if err != nil {
 		return err
@@ -85,9 +96,16 @@ func initDatabase(cfg *Config) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	if err := db.AutoMigrate(&doamin.Event{}); err != nil {
+	if err := db.AutoMigrate(getModelsToMigrate()...); err != nil {
 		return nil, err
 	}
 
 	return db, nil
+}
+
+func getModelsToMigrate() []any {
+	return []any{
+		&doamin.Event{},
+		// Add other models here
+	}
 }
