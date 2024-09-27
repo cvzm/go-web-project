@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cvzm/go-web-project/doamin"
-	domain_mock "github.com/cvzm/go-web-project/doamin/mock"
+	"github.com/cvzm/go-web-project/domain"
+	domain_mock "github.com/cvzm/go-web-project/domain/mock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -16,21 +16,21 @@ func TestEventUsecase_Save(t *testing.T) {
 	usecase := NewEventUsecase(mockRepo)
 
 	t.Run("Successfully save AWS event", func(t *testing.T) {
-		awsEvent := doamin.AWSEvent{
+		awsEvent := domain.AWSEvent{
 			AWSEventID:   "aws-123",
 			AWSEventType: "EC2_STARTED",
 			AWSMessage:   "EC2 instance started",
 			AWSTimestamp: time.Now(),
 		}
 
-		expectedEvent := doamin.Event{
-			Source:      doamin.SourceAWS,
+		expectedEvent := domain.Event{
+			Source:      domain.SourceAWS,
 			EventType:   awsEvent.AWSEventType,
 			Description: awsEvent.AWSMessage,
 			CreatedAt:   awsEvent.AWSTimestamp,
 		}
 
-		mockRepo.On("Save", mock.AnythingOfType("*doamin.Event")).Return(nil).Once()
+		mockRepo.On("Save", mock.AnythingOfType("*domain.Event")).Return(nil).Once()
 
 		err := usecase.Save(awsEvent)
 
@@ -39,21 +39,21 @@ func TestEventUsecase_Save(t *testing.T) {
 	})
 
 	t.Run("Successfully save GCP event", func(t *testing.T) {
-		gcpEvent := doamin.GCPEvent{
+		gcpEvent := domain.GCPEvent{
 			GCPEventID:   "gcp-456",
 			GCPEventType: "VM_STOPPED",
 			GCPMessage:   "VM instance stopped",
 			GCPTimestamp: time.Now(),
 		}
 
-		expectedEvent := doamin.Event{
-			Source:      doamin.SourceGCP,
+		expectedEvent := domain.Event{
+			Source:      domain.SourceGCP,
 			EventType:   gcpEvent.GCPEventType,
 			Description: gcpEvent.GCPMessage,
 			CreatedAt:   gcpEvent.GCPTimestamp,
 		}
 
-		mockRepo.On("Save", mock.AnythingOfType("*doamin.Event")).Return(nil).Once()
+		mockRepo.On("Save", mock.AnythingOfType("*domain.Event")).Return(nil).Once()
 
 		err := usecase.Save(gcpEvent)
 
@@ -62,14 +62,14 @@ func TestEventUsecase_Save(t *testing.T) {
 	})
 
 	t.Run("Failed to save event", func(t *testing.T) {
-		awsEvent := doamin.AWSEvent{
+		awsEvent := domain.AWSEvent{
 			AWSEventID:   "aws-789",
 			AWSEventType: "EC2_TERMINATED",
 			AWSMessage:   "EC2 instance terminated",
 			AWSTimestamp: time.Now(),
 		}
 
-		mockRepo.On("Save", mock.AnythingOfType("*doamin.Event")).Return(errors.New("save failed")).Once()
+		mockRepo.On("Save", mock.AnythingOfType("*domain.Event")).Return(errors.New("save failed")).Once()
 
 		err := usecase.Save(awsEvent)
 

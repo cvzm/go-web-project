@@ -7,7 +7,8 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/cvzm/go-web-project/adapter/storage"
-	"github.com/cvzm/go-web-project/doamin"
+	"github.com/cvzm/go-web-project/domain"
+	"github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,7 +16,7 @@ func TestNewEventRepository(t *testing.T) {
 	gormDB, _ := storage.GetMockDB(t)
 	repo := NewEventRepository(gormDB)
 	assert.NotNil(t, repo)
-	assert.Implements(t, (*doamin.EventRepository)(nil), repo)
+	assert.Implements(t, (*domain.EventRepository)(nil), repo)
 }
 
 func TestEventRepositorySave(t *testing.T) {
@@ -27,15 +28,17 @@ func TestEventRepositorySave(t *testing.T) {
 	mock.ExpectBegin()
 	mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO "events"`)).
 		WithArgs("AWS", "EC2_STARTED", "EC2 instance started",
+			pq.StringArray([]string{"A", "B"}),
 			createdAt, sqlmock.AnyArg(), sqlmock.AnyArg()).
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 	mock.ExpectCommit()
 
-	event := &doamin.Event{
-		Source:      doamin.SourceAWS,
-		EventType:   "EC2_STARTED",
-		Description: "EC2 instance started",
-		CreatedAt:   createdAt,
+	event := &domain.Event{
+		Source:            domain.SourceAWS,
+		EventType:         "EC2_STARTED",
+		Description:       "EC2 instance started",
+		AffectedResources: []string{"A", "B"},
+		CreatedAt:         createdAt,
 	}
 	err := repo.Save(event)
 	assert.NoError(t, err)
@@ -57,10 +60,10 @@ func TestEventRepositoryFindAll(t *testing.T) {
 
 	events, err := repo.FindAll()
 	assert.NoError(t, err)
-	assert.Equal(t, []doamin.Event{
+	assert.Equal(t, []domain.Event{
 		{
 			ID:          1,
-			Source:      doamin.SourceAWS,
+			Source:      domain.SourceAWS,
 			EventType:   "EC2_STARTED",
 			Description: "EC2 instance started",
 			CreatedAt:   timestamp,
@@ -68,7 +71,7 @@ func TestEventRepositoryFindAll(t *testing.T) {
 		},
 		{
 			ID:          2,
-			Source:      doamin.SourceGCP,
+			Source:      domain.SourceGCP,
 			EventType:   "VM_STOPPED",
 			Description: "VM instance stopped",
 			CreatedAt:   timestamp,

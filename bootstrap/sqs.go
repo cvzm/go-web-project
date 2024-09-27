@@ -11,18 +11,18 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
-	"github.com/cvzm/go-web-project/doamin"
+	"github.com/cvzm/go-web-project/domain"
 )
 
 // SQSConsumer represents a consumer that consumes and processes messages from an AWS SQS queue
 type SQSConsumer struct {
 	sqsClient    *sqs.Client
 	config       *Config
-	eventUsecase doamin.EventUsecase
+	eventUsecase domain.EventUsecase
 }
 
 // NewSQSConsumer creates a new SQSConsumer instance
-func NewSQSConsumer(cfg aws.Config, config *Config, eventUsecase doamin.EventUsecase) *SQSConsumer {
+func NewSQSConsumer(cfg aws.Config, config *Config, eventUsecase domain.EventUsecase) *SQSConsumer {
 	return &SQSConsumer{
 		sqsClient:    sqs.NewFromConfig(cfg),
 		config:       config,
@@ -73,7 +73,7 @@ func (c *SQSConsumer) receiveMessages(queueURL string) ([]types.Message, error) 
 
 // handleMessage processes a single SQS message
 func (c *SQSConsumer) handleMessage(message types.Message) error {
-	var awsEvent doamin.AWSEvent
+	var awsEvent domain.AWSEvent
 	if err := json.Unmarshal([]byte(*message.Body), &awsEvent); err != nil {
 		return err
 	}
@@ -90,7 +90,7 @@ func (c *SQSConsumer) deleteMessage(queueURL string, message types.Message) erro
 }
 
 // initSQSConsumer initializes the SQS consumer and starts it
-func initSQSConsumer(cfg *Config, eventUsecase doamin.EventUsecase) (*SQSConsumer, error) {
+func initSQSConsumer(cfg *Config, eventUsecase domain.EventUsecase) (*SQSConsumer, error) {
 	awsCfg, err := config.LoadDefaultConfig(context.Background(),
 		config.WithDefaultRegion(cfg.SQSRegion),
 		config.WithRetryer(func() aws.Retryer {

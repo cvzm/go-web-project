@@ -1,15 +1,20 @@
-package doamin
+package domain
 
-import "time"
+import (
+	"time"
+
+	"github.com/lib/pq"
+)
 
 // Event struct defines the properties of an event
 type Event struct {
-	ID          uint        `gorm:"primaryKey"`
-	Source      EventSource `gorm:"type:varchar(255);not null"`
-	EventType   string      `gorm:"type:varchar(100);not null"`
-	Description string      `gorm:"type:text"`
-	CreatedAt   time.Time   `gorm:"autoCreateTime"`
-	UpdatedAt   time.Time   `gorm:"autoUpdateTime"`
+	ID                uint           `gorm:"primaryKey"`
+	Source            EventSource    `gorm:"type:varchar(255);not null"`
+	EventType         string         `gorm:"type:varchar(100);not null"`
+	Description       string         `gorm:"type:text"`
+	AffectedResources pq.StringArray `gorm:"type:varchar(200)[];"`
+	CreatedAt         time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt         time.Time      `gorm:"autoUpdateTime"`
 }
 
 // TableName returns the name of the events table

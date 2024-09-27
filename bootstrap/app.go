@@ -10,7 +10,7 @@ import (
 
 	"github.com/cvzm/go-web-project/adapter/storage"
 	"github.com/cvzm/go-web-project/api"
-	"github.com/cvzm/go-web-project/doamin"
+	"github.com/cvzm/go-web-project/domain"
 
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
@@ -105,7 +105,7 @@ func initDatabase(cfg *Config) (*gorm.DB, error) {
 
 func getModelsToMigrate() []any {
 	return []any{
-		&doamin.Event{},
+		&domain.Event{},
 		// Add other models here
 	}
 }

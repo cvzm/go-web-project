@@ -1,16 +1,16 @@
 package usecase
 
-import "github.com/cvzm/go-web-project/doamin"
+import "github.com/cvzm/go-web-project/domain"
 
 type eventUsecase struct {
-	eventRepo doamin.EventRepository
+	eventRepo domain.EventRepository
 }
 
-func NewEventUsecase(repo doamin.EventRepository) doamin.EventUsecase {
+func NewEventUsecase(repo domain.EventRepository) domain.EventUsecase {
 	return &eventUsecase{eventRepo: repo}
 }
 
-func (u *eventUsecase) Save(cloudEvent doamin.CloudEvent) error {
+func (u *eventUsecase) Save(cloudEvent domain.CloudEvent) error {
 	event, err := cloudEvent.Parse()
 	if err != nil {
 		return err
